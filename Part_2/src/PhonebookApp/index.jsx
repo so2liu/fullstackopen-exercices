@@ -29,6 +29,9 @@ export default function PhonebookApp() {
     e.preventDefault();
 
     const index = persons.findIndex((p) => p.name === newPersonInfo.name);
+
+    let res;
+
     try {
       if (
         index > -1 &&
@@ -36,13 +39,21 @@ export default function PhonebookApp() {
           `${newPersonInfo.name} is already added to phonebook. Replace the old number with a new one?`
         )
       )
-        await personService.update(persons[index].id, newPersonInfo);
-      else await personService.create(newPersonInfo);
+        res = await personService.update(persons[index].id, newPersonInfo);
+      else res = await personService.create(newPersonInfo);
+
+      setAlarm({
+        display: true,
+        type: "success",
+        content: "Submit success!",
+      });
     } catch (error) {
-      console.error(error.toJSON());
-      setAlarm({ display: true, type: "error", content: error.message });
+      setAlarm({
+        display: true,
+        type: "error",
+        content: error.response.data.error,
+      });
     } finally {
-      setAlarm({ display: true, type: "success", content: "Submit success!" });
       await personService.getAll().then((data) => setPersons(data));
     }
   }

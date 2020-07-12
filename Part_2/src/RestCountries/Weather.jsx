@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 
-const baseURL = "http://api.weatherstack.com/current";
+const baseURL = `${
+  process.env.NODE_ENV === "development" ? "http" : "https"
+}://api.weatherstack.com/current`;
 
 function Weather({ name }) {
   const [weather, setWeather] = useState({
@@ -17,11 +19,15 @@ function Weather({ name }) {
       )
       .then((res) => res.data)
       .then((data) => {
+        console.log(data);
         setWeather({
           temperature: data.current.temperature,
           icons: data.current.weather_icons,
           isData: true,
         });
+      })
+      .catch((error) => {
+        console.error(error);
       });
   }, [name]);
   return (
